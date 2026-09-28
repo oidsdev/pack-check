@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pack Check: does your prompt pack hold up?</title>
+<meta name="description" content="A free tool. Paste a prompt pack for an AI agent and get it checked against the seven things every solid pack needs: provenance, disclosure, risk rules, and more. Nothing leaves your device.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#app">Skip to the tool</a>
+<header class="top">
+  <a class="brand" href="index.html">Pack Check</a>
+  <nav><a href="https://agent-house-rules.pages.dev">House Rules</a></nav>
+</header>
+
+<main id="app" tabindex="-1">
+  <noscript>
+    <div class="note"><strong>This tool needs JavaScript.</strong> The checker runs entirely in this page, so it can't work without it.</div>
+  </noscript>
+
+  <!-- Input -->
+  <section id="screen-input" data-screen>
+    <h1>Does your prompt pack hold up?</h1>
+    <p class="lead">A prompt pack is a set of instructions you give an AI agent &mdash; a trading system, a workflow, a job description. Paste yours below and get it checked against the seven things every solid pack needs.</p>
+    <p class="small muted">Free. No sign-up. Everything runs in this page; your text never leaves your device.</p>
+
+    <label class="pack-label" for="pack-in">Paste your prompt pack</label>
+    <textarea id="pack-in" spellcheck="false" placeholder="# Prompt Pack: My System (Starter)&#10;&#10;**Who it's for:** ...&#10;**Provenance:** ...&#10;**Disclosure:** ...&#10;&#10;## The prompt (give this to your agent)&#10;..."></textarea>
+
+    <div class="stack" style="margin-top:1.25rem">
+      <button class="btn big" type="button" id="check-btn" disabled>Check my pack</button>
+      <button class="btn secondary" type="button" id="sample-btn">Load a sample pack</button>
+    </div>
+    <p class="hint-msg" id="input-msg" role="status" aria-live="polite"></p>
+
+    <div class="note">
+      <strong>What it checks</strong>
+      Title, audience, provenance (is it from a real, live book?), disclosure, the actual prompt, risk rules with hard stops, and an honest "why it works" plus metrics. It also flags win-rate theater, martingale language, and missing disclosures.
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="screen-result" data-screen class="hidden">
+    <h1 tabindex="-1">Pack report</h1>
+    <p class="score" id="score-line"></p>
+    <p class="verdict" id="verdict-line"></p>
+
+    <h2>The seven checks</h2>
+    <ul class="checklist" id="checks-out"></ul>
+
+    <h2>Red flags</h2>
+    <div id="flags-out"></div>
+
+    <div class="row">
+      <button class="btn secondary" type="button" id="copy-report-btn">Copy report</button>
+      <button class="btn secondary" type="button" id="copy-template-btn">Copy blank template</button>
+    </div>
+    <div class="row">
+      <button class="btn secondary" type="button" id="restart-btn">Start over</button>
+    </div>
+    <p class="copied" id="copy-msg" role="status" aria-live="polite"></p>
+
+    <div class="note">
+      <strong>A checklist, not a guarantee.</strong>
+      Pack Check can't verify your track record is real &mdash; only your honesty does that. A pack that passes all seven checks can still lose money. That's what the disclosure is for.
+    </div>
+  </section>
+</main>
+
+<footer class="bottom">
+  <p><strong>Pack Check is a checklist, not a guarantee.</strong> It reads the words in your pack; it can't check whether your live account exists or your fills are real.</p>
+  <p>Free, from the <a href="https://ignitionfoundry.com">Orbit Desk</a> workshop. Sibling of <a href="https://agent-house-rules.pages.dev">Agent House Rules</a>. Everything you paste stays on your device: no accounts, no tracking, no network calls.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
