@@ -1,0 +1,18 @@
+{
+  "name": "pack-check",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Checklist for AI-agent prompt packs",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "c8 --include=app.js --reporter=text --reporter=json --reports-dir=coverage node --test test/unit/*.test.js test/integration/*.test.js && node test/check-coverage.js"
+  },
+  "devDependencies": {
+    "c8": "^10.1.3",
+    "jsdom": "^26.1.0"
+  }
+}

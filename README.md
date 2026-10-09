@@ -53,6 +53,19 @@ npx wrangler pages deploy . --project-name pack-check
 
 Any static host works — it's three files.
 
+## Tests
+
+```sh
+npm test
+```
+
+Unit tests cover the seven checks, red-flag search, and verdicts. Integration tests
+load each fixture through `window.__packCheck` (the in-page analyzer API), exercise
+the page (sample, check, copy, start over), and request the static files a host
+serves. Pack Check makes no network calls of its own, so there is no JSON API to
+hit. Coverage for the validation engine in `app.js` (the checks through `analyze`)
+is gated at 80%. The tests do not change that logic.
+
 ## Honest framing
 
 Pack Check is a checklist, not a guarantee. It reads the words in a pack; it can't
