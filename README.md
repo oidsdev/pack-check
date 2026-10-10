@@ -53,6 +53,22 @@ npx wrangler pages deploy . --project-name pack-check
 
 Any static host works — it's three files.
 
+## HTML report
+
+`html-report.js` turns an analysis object into one HTML file: summary counts, a check table, and collapsed notes and red flags. Styles are on the elements. No framework, no scripts.
+
+The object is what `analyze` returns: `results`, `flags`, `passes`, and `verdict`. Counts in the file come from `results`, not from `passes`.
+
+```sh
+node html-report.js report.json > report.html
+```
+
+`samples/martingale-report.html` is that file for `test/fixtures/martingale.md`. Rebuild it with:
+
+```sh
+node scripts/render-sample-report.js > samples/martingale-report.html
+```
+
 ## Tests
 
 ```sh
