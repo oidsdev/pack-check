@@ -53,6 +53,15 @@ npx wrangler pages deploy . --project-name pack-check
 
 Any static host works — it's three files.
 
+## GitHub Action
+
+Copy [docs/.github/workflows/example-pack-check.yml](docs/.github/workflows/example-pack-check.yml)
+to `.github/workflows/pack-check.yml` in the repo that holds your packs. The
+example lives under `docs/`, so it does not run here. It checks `packs/**` on
+pull requests, posts the report as a comment, and fails the job on a missing
+section or a red flag. No secrets. Setup and a text walkthrough:
+[docs/README.md](docs/README.md).
+
 ## Tests
 
 ```sh
