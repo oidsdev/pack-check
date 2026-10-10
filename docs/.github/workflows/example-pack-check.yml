@@ -1,0 +1,112 @@
+# Example only. Copy this file to .github/workflows/pack-check.yml in the
+# repository that holds your prompt packs. GitHub ignores workflow files that
+# sit outside .github/workflows/ at the repository root, so this copy does not
+# run in pack-check itself.
+#
+# Secrets: none. The checker only reads markdown. The default GITHUB_TOKEN
+# posts the report. contents is read. pull-requests is write for that comment.
+
+name: Pack Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "packs/**"
+      - ".github/workflows/pack-check.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pack-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check packs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check out pack-check
+        uses: actions/checkout@v4
+        with:
+          repository: oidsdev/pack-check
+          path: .pack-check
+          # ref: <commit>   # pin this if you do not want the default branch
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: .pack-check/package-lock.json
+
+      - name: Install pack-check dependencies
+        working-directory: .pack-check
+        run: npm ci
+
+      - name: Run pack-check
+        id: check
+        continue-on-error: true
+        working-directory: .pack-check
+        env:
+          PACK_DIR: ${{ github.workspace }}/packs
+          REPORT_PATH: ${{ github.workspace }}/pack-check-report.md
+        run: node docs/github-action/check.mjs
+
+      - name: Post report comment
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        env:
+          REPORT_PATH: ${{ github.workspace }}/pack-check-report.md
+        with:
+          script: |
+            const fs = require("fs");
+            const marker = "<!-- pack-check-report -->";
+            const reportPath = process.env.REPORT_PATH;
+            let body = marker + "\n\n";
+            if (reportPath && fs.existsSync(reportPath)) {
+              body += fs.readFileSync(reportPath, "utf8");
+            } else {
+              body += "Pack Check did not write a report. See the workflow log.\n";
+            }
+            const max = 65000;
+            if (body.length > max) {
+              body = body.slice(0, max) + "\n\nReport truncated to fit a pull request comment.\n";
+            }
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => {
+              return comment.user && comment.user.login === "github-actions[bot]"
+                && typeof comment.body === "string"
+                && comment.body.includes(marker);
+            });
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail on critical findings
+        if: always() && steps.check.outcome == 'failure'
+        run: |
+          echo "Pack check found a missing section, a red flag, or a pack too short to check."
+          exit 1
